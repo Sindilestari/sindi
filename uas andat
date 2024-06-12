@@ -17,14 +17,14 @@ y=ifelse(data1$Gender=="W",1,0)
 model=glm(y~x1+x2+x3+x4+x5+x6+x7,data=data1,family=binomial)
 model
 
- # Prediksi probabilitas# Pmodelrediksi probabilitas
+#Prediksi probabilitas# Pmodelrediksi probabilitas
 predicted_prob = predict(model, type = "response")
 
-# Plot 
-ggplot(data, aes(x =predicted_prob, y=y)) +
-geom_point(alpha = 0.5) +
-geom_smooth(method = "glm", method.args = list(family = binomialdi), se = FALSE, color = "blue") +
-labs(title = "Plot Probabilitas Prediksi vs Observasi",
-     x = "Probabilitas Prediksi",
-     y = "Observasi (y)") +
-theme_minimal()
+#Plot
+ggplot(data, aes(x = x1+x2+x3+x4+x5+x6+x7, y = predicted_prob)) +
+  geom_point(alpha = 0.05) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+  ggtitle("Logistic regression model fit") +
+  xlab("Weight in pounds") +
+  ylab("Probability") +
+  theme_minimal()
