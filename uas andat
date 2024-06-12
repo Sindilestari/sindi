@@ -1,0 +1,30 @@
+data=read.csv("C:/Users/lenovo/Downloads/Data UAS Andat Kategorik 2024 - Sheet1.csv")
+data
+data1=data[,-1]
+data1
+
+x1=data1$Weight.in.pounds
+x2=data1$Height..in.inches
+x3=data1$Waist..in.inches
+x4=data1$Hips..in.inches
+x5=data1$Chest..in.inches
+x6=data1$Hand.in.inches
+x7=data1$Shoe..US.
+
+y=ifelse(data1$Gender=="W",1,0)
+
+#model regresi logistik
+model=glm(y~x1+x2+x3+x4+x5+x6+x7,data=data1,family=binomial)
+model
+
+ # Prediksi probabilitas# Pmodelrediksi probabilitas
+predicted_prob = predict(model, type = "response")
+
+# Plot 
+ggplot(data, aes(x =predicted_prob, y=y)) +
+geom_point(alpha = 0.5) +
+geom_smooth(method = "glm", method.args = list(family = binomialdi), se = FALSE, color = "blue") +
+labs(title = "Plot Probabilitas Prediksi vs Observasi",
+     x = "Probabilitas Prediksi",
+     y = "Observasi (y)") +
+theme_minimal()
