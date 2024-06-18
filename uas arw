@@ -1,0 +1,98 @@
+##############
+install.packages("TSA")
+install.packages("forecast")
+install.packages("tseries")
+library(fma)
+library(TSA)
+library(forecast)
+library(tseries)
+library(rrcov)
+library(robustbase)
+library(ggplot2)
+data=read.csv("C:/Users/lenovo/Documents/data4.csv",sep=";",header=T)
+data
+data1=data[,2]
+data1
+
+plot(data1, type ="o", pch = 16, cex =.5, xlab = "days", ylab ='CarApplication')
+
+acf(data1, lag.max = 16,type = "correlation", main = "ACF for the Number \nof Sheep")
+
+acf(data1, lag.max = 16,type = "partial", main = "PACF for the Number \nof Sheep")
+
+#differencing
+
+df1= diff(data1)
+plot(diff_data, type ="o", pch = 16, cex =.5, xlab = "days", ylab ='Diff_Car')
+
+df2=diff(df1)
+plot(diff_data1, type ="o", pch = 16, cex =.5, xlab = "days", ylab ='Diff_Car')
+
+#acf & pacf
+
+acf(diff_data1, lag.max = 25,type = "correlation", main = "ACF for the Number \nof Diff_Car")
+
+acf(diff_data1, lag.max = 25,type = "partial", main = "PACF for the Number \nof Diff_Car")
+
+#model AR(1) atau p=1
+data.fit.sar = arima(data1,order=c(1,0,0),  seasonal=list(order = c(1,0,0),period=10))
+#model MA(1) atau   q=1
+data.fit.sar1 = arima(data1,order=c(0,0,1),  seasonal=list(order = c(1,0,0),period=10))
+#model ARMA(1,1) atau p=1, q=1
+data.fit.sar2 = arima(data1,order=c(1,0,1),  seasonal=list(order = c(1,0,1),period=10))
+data.fit.sar2 = arima(data1,order=c(1,0,1))
+#model ARIMA (2,2,1)
+data.fit.sar3 = arima(data1,order=c(2,2,1))
+
+data.fit.sar
+data.fit.sar1
+data.fit.sar2
+data.fit.sar3
+
+#estimasi parameter
+model1=arima(df2,order=c(2,2,1))
+model1
+model2=arima(df2,order=c(2,2,0))
+model2
+model3=arima(df2,order=c(1,2,1))
+model3
+model4=arima(df2,order=c(1,2,0))
+model4 
+model5=arima(df2,order=c(0,2,1))
+model5
+model6=arima(df2,order=c(0,2,0))
+model6
+
+#analsisi residuall
+shapiro.test(residuals(model1))
+Box.test(residuals(model1),type="Ljung-Box")
+shapiro.test(residuals(model2))
+Box.test(residuals(model2),type="Ljung-Box")
+shapiro.test(residuals(model3))
+Box.test(residuals(model3),type="Ljung-Box")
+shapiro.test(residuals(model4))
+Box.test(residuals(model4),type="Ljung-Box")
+shapiro.test(residuals(model5))
+Box.test(residuals(model5),type="Ljung-Box")
+shapiro.test(residuals(model6))
+Box.test(residuals(model6),type="Ljung-Box")
+
+#fitted
+res.fit=as.vector(residuals(data.fit.sar3))
+library(forecast)
+fit.ar=as.vector(fitted(data.fit.sar3))
+fit.ar
+Box.test(res.fit, lag=39, fitdf = 2, type = "Ljung")
+
+par(mfrow=c(1,1))
+plot(data1,res.fit,type="p",pch=16,cex=.5,xlab='car',ylab='days')
+lines(data1,fit.ar,type="p",pch=18,cex=.5,xlab='car',ylab='days')
+legend(95,88,c("y(t)","yhat(t)"), pch=c(16, NA),lwd=c(NA,.5),cex=.55)
+
+#forecast
+frc=stats::arima(data1,order = c(2,2,1))
+fcast=forecast(frc,h=4,level=c(90))
+plot(fcast)
+fcast
+plot(fcast,xlab = "days\\", ylab = "Mobil", main= "Forecast using 
+ARIMA(2,2,1)", lwd=1)
